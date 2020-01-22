@@ -107,11 +107,13 @@ class Space_Invader :
 
 
 	def _fire_new_bullet(self) :
-		new_bullet = Bullet(self)
-		self.bullets.add(new_bullet)
+		if (len(self.bullets) <= self.setting.no_allowed_bullets) :
+			new_bullet = Bullet(self)
+			self.bullets.add(new_bullet)
 
 
 	def _remove_bullets(self) :
+		#we cannot remove element and iterate simultaneously hence we are working on copy
 		for bullet in self.bullets.copy() :
 			if bullet.bullet_rect.bottom < 0:
 				self.bullets.remove(bullet)
