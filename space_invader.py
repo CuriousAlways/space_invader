@@ -3,6 +3,7 @@ import pygame
 from settings import Settings 
 from ship import Ship
 from bullets import Bullet
+from aliens import Alien
 
 class Space_Invader :
 	'''class to manage game resources and assets'''
@@ -16,8 +17,12 @@ class Space_Invader :
 
 		self.ship = Ship(self)
 
-		#container class to manage multiple object of pygame.Sprite type
+		#container class to manage multiple object (bullet) of pygame.Sprite type
 		self.bullets = pygame.sprite.Group()
+
+		#container class to manage multiple object (bullet) of pygame.Sprite type
+		self.aliens = pygame.sprite.Group()
+		self._create_alien_fleet()
 
 	def run_game(self) :
 
@@ -34,7 +39,24 @@ class Space_Invader :
 
 			self._update_screen()
 			#debug statement
-			#print(f'width :{self.setting.width}  , height :{self.setting.height}')  
+			#print(f'width :{self.setting.width}  , height :{self.setting.height}')
+
+
+	def _create_alien_fleet(self):
+		#create a dummy alien ship to manage spacing on screen
+		alien = Alien(self) 
+		alien_width = alien.alien_rect.width
+
+		#calculate no. of aliens that can be drawn on game window
+		available_space = self.setting.width - 2*alien_width
+		no_of_alien = available_space // (2*alien_width)
+
+		#creating Alien object and adding them to pygame.sprite.Group()
+		for alien_number in range(no_of_alien) :
+			alien = Alien(self)
+			alien.x = alien_width + 2*alien_number*alien_width
+			alien.alien_rect.x = alien.x
+			self.aliens.add(alien)
 
 	def _check_event(self) :
 
@@ -65,6 +87,9 @@ class Space_Invader :
 		self.screen.fill(self.setting.bg_color)
 		#draws ship on screen
 		self.ship.draw_ship()
+		#draw alien ships
+		for alien in self.aliens.sprites():
+			alien.draw_alien()
 		#draws bullet on screen
 		for bullet in self.bullets.sprites():
 			bullet.draw_bullet() 
