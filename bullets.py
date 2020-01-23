@@ -18,6 +18,10 @@ class Bullet(Sprite) :
 		self.bullet_rect.midtop = si_game.ship.image_rect.midtop
 
 
+		#needed by pygame.sprite.groupcollide() used in space_invader.py
+		self.rect = self.bullet_rect
+
+
 	def move_bullet(self) :
 		'''moving bullet upwards at specified speed'''
 		bullet_y  = float(self.bullet_rect.y)

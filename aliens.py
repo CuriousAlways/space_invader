@@ -18,6 +18,9 @@ class Alien(Sprite) :
 		self.alien_rect.x = self.alien_rect.width
 		self.alien_rect.y = self.alien_rect.height
 
+		#needed by pygame.sprite.groupcollide() used in space_invader.py
+		self.rect = self.alien_rect
+
 		#store x coordinate of aliens
 		self.x = float(self.alien_rect.x)
 

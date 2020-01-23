@@ -41,6 +41,10 @@ class Space_Invader :
 			#remove bullets that went beyond the game window
 			self._remove_bullets()
 
+			#when all of the fleet is destroyed we redraw the fleet
+			if not self.aliens : #empty group evaluates False
+				self._create_alien_fleet()
+
 			self._update_screen()
 			#debug statement
 			#print(f'width :{self.setting.width}  , height :{self.setting.height}')
@@ -117,6 +121,8 @@ class Space_Invader :
 		#draws bullet on screen
 		for bullet in self.bullets.sprites():
 			bullet.draw_bullet() 
+		#removing bullet and aliens that had collided
+		collision = pygame.sprite.groupcollide(self.bullets,self.aliens,True,True)
 		#drawing the screen with updated game element states
 		pygame.display.flip()
 
@@ -168,7 +174,8 @@ class Space_Invader :
 	def _remove_bullets(self) :
 		#we cannot remove element and iterate simultaneously hence we are working on copy
 		for bullet in self.bullets.copy() :
-			if bullet.bullet_rect.bottom < 0:
+			if bullet.bullet_rect.top <= 0:
+				#print('--removing bullet---')#debug
 				self.bullets.remove(bullet)
 		#debug line
 		#print(f"bullet -{len(self.bullets)}")

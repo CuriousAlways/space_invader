@@ -22,6 +22,9 @@ class Ship:
 		#alligning ship image so that it appears at bottom center
 		self.image_rect.midbottom = self.screen_rect.midbottom
 
+		#needed by pygame.sprite.groupcollide() used in space_invader.py
+		self.rect = self.image_rect
+
 		#movement flags and speed 
 		self.ship_speed = si_game.setting.ship_speed
 		self.move_right = False
