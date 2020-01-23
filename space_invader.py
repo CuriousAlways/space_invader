@@ -118,6 +118,9 @@ class Space_Invader :
 		#draw alien ships
 		for alien in self.aliens.sprites():
 			alien.draw_alien()
+		#detecting collision between ship and alien
+		if pygame.sprite.spritecollideany(self.ship,self.aliens): #returns alien that collided else None
+			print("Collision!!!!!")#debug line
 		#draws bullet on screen
 		for bullet in self.bullets.sprites():
 			bullet.draw_bullet() 

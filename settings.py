@@ -5,7 +5,7 @@ class Settings :
 	def __init__(self) :
 		#game window setting
 		self.width    = 850
-		self.height   = 650
+		self.height   = 400
 		self.bg_color =(230,230,230) 
 
 		#ship settings
@@ -16,7 +16,7 @@ class Settings :
 		self.bullet_width  = 2
 		self.bullet_height = 7
 		self.bullet_color  = (60,60,60)
-		self.no_allowed_bullets = 3
+		self.no_allowed_bullets = 2
 
 		#aliens settings
 		self.alien_speed_x = 0.5
