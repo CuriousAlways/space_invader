@@ -61,4 +61,8 @@ class Ship:
 		self.image_rect.y = self.loc_y
 
 
+	def reposition_ship(self,si_game):
+		#reposition ship at mid bottom of game window
+		self.screen_rect = si_game.screen.get_rect()
+		self.image_rect.midbottom = self.screen_rect.midbottom
 

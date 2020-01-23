@@ -1,5 +1,7 @@
 import sys
 import pygame
+from time import sleep
+from game_stats import Game_Stats
 from settings import Settings 
 from ship import Ship
 from bullets import Bullet
@@ -12,9 +14,14 @@ class Space_Invader :
 
 		self.setting = Settings() 
 
+
 		pygame.init(); #initializes background setting of pygame
 		self.screen = pygame.display.set_mode((self.setting.width,self.setting.height),pygame.RESIZABLE) #creates the game window
 		pygame.display.set_caption('Space Invader')
+
+
+		self.game_stats = Game_Stats(self)
+
 
 		self.ship = Ship(self)
 
@@ -30,20 +37,24 @@ class Space_Invader :
 		while True:
 			self._check_event()
 
-			for alien in self.aliens.sprites():
-				alien.move_alien()
+			if self.game_stats.game_active :
+				
+				for alien in self.aliens.sprites():
+					alien.move_alien()
 
-			self.ship.move_ship()
-			#calls move_bullet method for each sprite object
-			for bullet in self.bullets.sprites():
-				bullet.move_bullet()
+				self.ship.move_ship()
+				#calls move_bullet method for each sprite object
+				for bullet in self.bullets.sprites():
+					bullet.move_bullet()
 
-			#remove bullets that went beyond the game window
-			self._remove_bullets()
+				#remove bullets that went beyond the game window
+				self._remove_bullets()
 
-			#when all of the fleet is destroyed we redraw the fleet
-			if not self.aliens : #empty group evaluates False
-				self._create_alien_fleet()
+				#when all of the fleet is destroyed we redraw the fleet
+				if not self.aliens : #empty group evaluates False
+					self._create_alien_fleet()
+			else:
+				print("GAME OVER!!!1")
 
 			self._update_screen()
 			#debug statement
@@ -113,21 +124,33 @@ class Space_Invader :
 
 		#gives background color to game window by redrawing screen on every loop 
 		self.screen.fill(self.setting.bg_color)
+
 		#draws ship on screen
 		self.ship.draw_ship()
+
 		#draw alien ships
 		for alien in self.aliens.sprites():
 			alien.draw_alien()
+
 		#detecting collision between ship and alien
 		if pygame.sprite.spritecollideany(self.ship,self.aliens): #returns alien that collided else None
-			print("Collision!!!!!")#debug line
+			self._ship_hit()
+
 		#draws bullet on screen
 		for bullet in self.bullets.sprites():
 			bullet.draw_bullet() 
+
 		#removing bullet and aliens that had collided
 		collision = pygame.sprite.groupcollide(self.bullets,self.aliens,True,True)
+
+		#number lifes user have indicated by ship image on top right corner
+		self.life_indicator()
+
 		#drawing the screen with updated game element states
 		pygame.display.flip()
+
+		#detecting if any ship reached bottom
+		self.alien_reaches_bottom()
 
 
 
@@ -182,7 +205,47 @@ class Space_Invader :
 				self.bullets.remove(bullet)
 		#debug line
 		#print(f"bullet -{len(self.bullets)}")
-			
+
+
+	def alien_reaches_bottom(self):
+		screen_rect = self.screen.get_rect()
+		for alien in self.aliens.sprites():
+			alien_rect = alien.alien_rect
+			if(alien_rect.bottom >= screen_rect.bottom):
+				#this is same as though ship is hit by alien
+				self._ship_hit()	
+
+	def _ship_hit(self):
+		#pause game for 1 sec
+		sleep(1)
+
+		#decrement no. of ships left
+		self.game_stats.no_of_ship_left -= 1
+
+		#clear game window	
+		self.aliens.empty()
+		self.bullets.empty()
+
+		#redraw fleet and reposition ship 
+		self._create_alien_fleet()
+		self.ship.reposition_ship(self)
+
+		#if no. of ship left = 0 then gameover
+		if self.game_stats.no_of_ship_left == 0:
+			self.game_stats.game_active = False
+
+
+
+	def life_indicator(self):
+		'''displays no. of before game over at top right corner'''
+		for count in range(self.game_stats.no_of_ship_left):
+			print('count = '+str(count))#debug line
+			image       = pygame.image.load('./images/ship_indicator.bmp')
+			image_rect  = image.get_rect()
+			screen_rect = self.screen.get_rect()
+			image_rect.top   = screen_rect.top
+			image_rect.right = screen_rect.right - count*image_rect.width
+			self.screen.blit(image,image_rect)
 
 
 
