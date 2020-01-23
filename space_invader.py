@@ -5,6 +5,7 @@ from ship import Ship
 from bullets import Bullet
 from aliens import Alien
 
+
 class Space_Invader :
 	'''class to manage game resources and assets'''
 	def __init__(self) :
@@ -29,6 +30,9 @@ class Space_Invader :
 		while True:
 			self._check_event()
 
+			for alien in self.aliens.sprites():
+				alien.move_alien()
+
 			self.ship.move_ship()
 			#calls move_bullet method for each sprite object
 			for bullet in self.bullets.sprites():
@@ -42,21 +46,41 @@ class Space_Invader :
 			#print(f'width :{self.setting.width}  , height :{self.setting.height}')
 
 
+
 	def _create_alien_fleet(self):
 		#create a dummy alien ship to manage spacing on screen
 		alien = Alien(self) 
-		alien_width = alien.alien_rect.width
 
-		#calculate no. of aliens that can be drawn on game window
+		alien_width = alien.alien_rect.width
+		alien_height = alien.alien_rect.height
+
+		#calculate no. of aliens that can be drawn in a row on game window
 		available_space = self.setting.width - 2*alien_width
 		no_of_alien = available_space // (2*alien_width)
 
+		#calculate no. of rows of aliens that can be drawn 
+		available_space = self.setting.height - 3*alien_height -self.ship.image_rect.height
+		no_of_row = available_space//(2*alien_height)
+		#print("no. of rows "+str(no_of_row)) #debug statement
+
 		#creating Alien object and adding them to pygame.sprite.Group()
-		for alien_number in range(no_of_alien) :
-			alien = Alien(self)
-			alien.x = alien_width + 2*alien_number*alien_width
-			alien.alien_rect.x = alien.x
-			self.aliens.add(alien)
+		for row_no in range(no_of_row):
+			for alien_number in range(no_of_alien) :
+				self._create_alien(row_no,alien_number)
+			
+
+
+	def _create_alien(self,row_no,alien_number):
+		alien = Alien(self)
+		alien_width = alien.alien_rect.width
+		alien_height = alien.alien_rect.height
+		alien.y = alien_height + 2*alien_height*row_no
+		alien.x = alien_width + 2*alien_number*alien_width
+		alien.alien_rect.y = alien.y
+		alien.alien_rect.x = alien.x
+		self.aliens.add(alien)	
+
+
 
 	def _check_event(self) :
 
@@ -97,6 +121,7 @@ class Space_Invader :
 		pygame.display.flip()
 
 
+
 	def _keydown_event_check(self,event) :
 		if (event.key == pygame.K_RIGHT)   :
 			self.ship.move_right = True
@@ -117,6 +142,7 @@ class Space_Invader :
 			self._fire_new_bullet()
 
 
+
 	def _keyup_event_check(self,event) :
 		if (event.key == pygame.K_RIGHT)   :
 			self.ship.move_right = False
@@ -131,10 +157,12 @@ class Space_Invader :
 			self.ship.move_down = False
 
 
+
 	def _fire_new_bullet(self) :
 		if (len(self.bullets) <= self.setting.no_allowed_bullets) :
 			new_bullet = Bullet(self)
 			self.bullets.add(new_bullet)
+
 
 
 	def _remove_bullets(self) :
@@ -143,8 +171,9 @@ class Space_Invader :
 			if bullet.bullet_rect.bottom < 0:
 				self.bullets.remove(bullet)
 		#debug line
-		print(f"bullet -{len(self.bullets)}")
+		#print(f"bullet -{len(self.bullets)}")
 			
+
 
 
 
