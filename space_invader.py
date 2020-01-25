@@ -7,6 +7,7 @@ from ship import Ship
 from bullets import Bullet
 from aliens import Alien
 from button import Button
+from scoreboard import Score_Board
 
 
 
@@ -30,12 +31,16 @@ class Space_Invader :
 		#container class to manage multiple object (bullet) of pygame.Sprite type
 		self.bullets = pygame.sprite.Group()
 
-		#container class to manage multiple object (bullet) of pygame.Sprite type
+		#container class instance to manage multiple object (bullet) of pygame.Sprite type
 		self.aliens = pygame.sprite.Group()
 		self._create_alien_fleet()
 
 		#create a button instance
 		self.button = Button(self,'Play')
+
+		#instance of Score_Board() class 
+		self.scoreboard = Score_Board(self)
+
 
 	def run_game(self) :
 
@@ -151,10 +156,20 @@ class Space_Invader :
 			bullet.draw_bullet() 
 
 		#removing bullet and aliens that had collided
+		'''any bullet that collides with an alien becomes 
+		a key in the collisions dictionary. The value associated 
+		with each bullet is a list of aliens it has collided with'''
 		collision = pygame.sprite.groupcollide(self.bullets,self.aliens,True,True)
+
+		if collision:
+			for alien in collision.values():
+				self.game_stats.current_score += (self.setting.alien_hit_point * len(alien))
 
 		#number lifes user have indicated by ship image on top right corner
 		self.life_indicator()
+
+		#prints score
+		self.scoreboard.draw_score(self.game_stats.current_score)
 
 		#display button initially or when self.game_stats.game_active = False
 		if self.game_stats.game_active == False:
@@ -184,7 +199,7 @@ class Space_Invader :
 		elif (event.key == pygame.K_q)     :
 			sys.exit()
 
-		elif (event.key == pygame.K_SPACE) :
+		elif ((event.key == pygame.K_SPACE) and (self.game_stats.game_active)): #rest of KEYDOWN events remain inactive because in run_game loop neither alien nor ship is repositioned until game_status_active become true
 			self._fire_new_bullet()
 
 

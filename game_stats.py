@@ -8,9 +8,11 @@ class Game_Stats :
 		#starts game in inactive state
 		self.game_active = False
 
+		#reset various game component
 		self.reset_stats()
 
 
 	def reset_stats(self) :
 		self.no_of_ship_left = self.setting.no_of_ship
+		self.current_score   = 0  #player score is zero (initially and after restart) 
 		self.setting.dynamic_settings()
