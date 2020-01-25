@@ -11,6 +11,7 @@ from scoreboard import Score_Board
 
 
 
+
 class Space_Invader :
 	'''class to manage game resources and assets'''
 	def __init__(self) :
@@ -64,8 +65,8 @@ class Space_Invader :
 				if not self.aliens : #empty group evaluates False
 					self.setting.level_up()
 					self._create_alien_fleet()
-			else:
-				print("GAME OVER!!!")
+			# else:
+			# 	print("GAME OVER!!!")
 
 			self._update_screen()
 			#debug statement
@@ -164,6 +165,10 @@ class Space_Invader :
 		if collision:
 			for alien in collision.values():
 				self.game_stats.current_score += (self.setting.alien_hit_point * len(alien))
+
+		#updating high score
+		if self.game_stats.current_score > self.scoreboard.high_score :
+			Score_Board.update_high_score(self.game_stats.current_score)    #update_high_score() is defined in game_stats.py
 
 		#number lifes user have indicated by ship image on top right corner
 		self.life_indicator()
@@ -268,6 +273,7 @@ class Space_Invader :
 		#if no. of ship left = 0 then gameover
 		if self.game_stats.no_of_ship_left == 0:
 			self.game_stats.game_active = False
+			print("GAME OVER!!!")
 
 
 
