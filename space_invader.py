@@ -6,6 +6,8 @@ from settings import Settings
 from ship import Ship
 from bullets import Bullet
 from aliens import Alien
+from button import Button
+
 
 
 class Space_Invader :
@@ -32,6 +34,9 @@ class Space_Invader :
 		self.aliens = pygame.sprite.Group()
 		self._create_alien_fleet()
 
+		#create a button instance
+		self.button = Button(self,'Play')
+
 	def run_game(self) :
 
 		while True:
@@ -52,9 +57,10 @@ class Space_Invader :
 
 				#when all of the fleet is destroyed we redraw the fleet
 				if not self.aliens : #empty group evaluates False
+					self.setting.level_up()
 					self._create_alien_fleet()
 			else:
-				print("GAME OVER!!!1")
+				print("GAME OVER!!!")
 
 			self._update_screen()
 			#debug statement
@@ -117,6 +123,10 @@ class Space_Invader :
 					self.setting.height = event.h
 					self.screen = pygame.display.set_mode((self.setting.width,self.setting.height),pygame.RESIZABLE)
 
+				elif (event.type == pygame.MOUSEBUTTONDOWN):
+					mouse_pos = pygame.mouse.get_pos() # returns tuple with mouse x,y coordinate
+					self._check_play_button(mouse_pos) #checks if play button is pressed
+
 
 
 
@@ -145,6 +155,10 @@ class Space_Invader :
 
 		#number lifes user have indicated by ship image on top right corner
 		self.life_indicator()
+
+		#display button initially or when self.game_stats.game_active = False
+		if self.game_stats.game_active == False:
+			self.button.draw_button()
 
 		#drawing the screen with updated game element states
 		pygame.display.flip()
@@ -188,6 +202,12 @@ class Space_Invader :
 		elif (event.key == pygame.K_DOWN)  :
 			self.ship.move_down = False
 
+	def _check_play_button(self,mouse_pos):
+		button_clicked = self.button.button_rect.collidepoint(mouse_pos)
+		if (button_clicked and not self.game_stats.game_active) :
+			self.game_stats.reset_stats()
+			self.game_stats.game_active = True
+			
 
 
 	def _fire_new_bullet(self) :
@@ -239,7 +259,7 @@ class Space_Invader :
 	def life_indicator(self):
 		'''displays no. of before game over at top right corner'''
 		for count in range(self.game_stats.no_of_ship_left):
-			print('count = '+str(count))#debug line
+			#print('count = '+str(count))#debug line
 			image       = pygame.image.load('./images/ship_indicator.bmp')
 			image_rect  = image.get_rect()
 			screen_rect = self.screen.get_rect()

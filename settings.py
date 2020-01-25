@@ -9,7 +9,6 @@ class Settings :
 		self.bg_color =(230,230,230) 
 
 		#ship settings
-		self.ship_speed = 1.5
 		self.no_of_ship = 3
 
 		#bullet settings
@@ -22,3 +21,24 @@ class Settings :
 		#aliens settings
 		self.alien_speed_x = 0.5
 		self.alien_speed_y = 50
+
+		#determines by how much does the dynamic quantity would change
+		self.speed_up_factor = 1.1
+		
+
+	def dynamic_settings(self) :
+		#values of these quantity can change during game play
+		self.ship_speed    = 1.5
+		self.bullet_speed  = 0.1
+		self.alien_speed_x = 0.5
+
+
+	def level_up(self) :
+		#changes values of dynamic settings as game progresses
+		self.ship_speed    *= self.speed_up_factor
+		self.bullet_speed  *= self.speed_up_factor
+		self.alien_speed_x *= self.speed_up_factor
+
+
+
+
